@@ -158,7 +158,7 @@ export default function HowIWork() {
           ref={pinRef}
           className="relative hidden h-screen items-center overflow-hidden md:flex"
         >
-          <p className="transition-accent absolute left-8 top-10 text-[13px] font-medium uppercase tracking-[0.3em]">
+          <p className="transition-accent absolute left-8 top-24 text-[13px] font-medium uppercase tracking-[0.3em] md:top-28">
             <span className="text-accent" aria-hidden="true">
               {"◇ "}
             </span>

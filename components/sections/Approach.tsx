@@ -48,18 +48,18 @@ export default function Approach() {
           scrollTrigger: {
             trigger: el,
             start: "top top",
-            end: "+=1400",
+            end: "+=800",
             pin: true,
-            scrub: 0.7,
+            scrub: 0.6,
             anticipatePin: 1,
           },
         });
         tl.to(words, {
           yPercent: 0,
           ease: "none",
-          stagger: 0.6,
-          duration: 1.6,
-        }).to({}, { duration: 1.2 }); // hold the finished statement
+          stagger: 0.35,
+          duration: 1,
+        }).to({}, { duration: 0.4 }); // brief hold the finished statement
       }
     );
 
@@ -72,12 +72,12 @@ export default function Approach() {
         gsap.to(words, {
           yPercent: 0,
           ease: "none",
-          stagger: 0.6,
+          stagger: 0.35,
           scrollTrigger: {
             trigger: el,
-            start: "top 70%",
-            end: "center 40%",
-            scrub: 0.7,
+            start: "top 80%",
+            end: "center 55%",
+            scrub: 0.6,
           },
         });
       }
@@ -102,7 +102,7 @@ export default function Approach() {
     <section
       ref={ref}
       id="approach"
-      className="relative flex min-h-screen flex-col justify-center px-4 py-32 md:px-8"
+      className="relative flex min-h-screen flex-col justify-start px-4 pb-24 pt-28 md:px-8 md:pt-36"
     >
       <p className="transition-accent mb-12 text-[13px] font-medium uppercase tracking-[0.3em]">
         <span className="text-accent" aria-hidden="true">

@@ -1,12 +1,24 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { projects, ACCENTS, type Project } from "@/lib/projects";
 import { useSectionAccent } from "@/components/AccentContext";
 import { useCaseTransition } from "@/components/CaseTransition";
+import ProjectMock from "@/components/ProjectMock";
+import { gsap, prefersReducedMotion } from "@/lib/gsap";
 
-function WorkRow({ project }: { project: Project }) {
+function WorkRow({
+  project,
+  onHoverStart,
+  onHoverMove,
+  onHoverEnd,
+}: {
+  project: Project;
+  onHoverStart: (p: Project) => void;
+  onHoverMove: (x: number, y: number) => void;
+  onHoverEnd: () => void;
+}) {
   const { navigate } = useCaseTransition();
   const accentHex = ACCENTS[project.accent];
   const tickerItems = Array.from({ length: 8 });
@@ -24,6 +36,9 @@ function WorkRow({ project }: { project: Project }) {
           e.preventDefault();
           navigate(e.clientX, e.clientY, `/work/${project.slug}`, accentHex);
         }}
+        onMouseEnter={() => onHoverStart(project)}
+        onMouseMove={(e) => onHoverMove(e.clientX, e.clientY)}
+        onMouseLeave={onHoverEnd}
         data-cursor="view"
         className="group grid grid-cols-[auto_1fr] items-center gap-5 border-t border-fg/15 py-7 md:grid-cols-[auto_1fr_auto] md:gap-10 md:py-0"
         style={{ "--row-accent": accentHex } as React.CSSProperties}
@@ -79,7 +94,61 @@ function WorkRow({ project }: { project: Project }) {
 
 export default function Works() {
   const ref = useRef<HTMLElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const moversRef = useRef<{
+    x: (v: number) => void;
+    y: (v: number) => void;
+  } | null>(null);
+  const [previewProject, setPreviewProject] = useState<Project | null>(null);
+  const activeRef = useRef(false);
   useSectionAccent(ref, "sage");
+
+  const ensureMovers = () => {
+    if (moversRef.current || !panelRef.current) return moversRef.current;
+    const el = panelRef.current;
+    moversRef.current = {
+      x: gsap.quickTo(el, "x", { duration: 0.55, ease: "power3.out" }),
+      y: gsap.quickTo(el, "y", { duration: 0.55, ease: "power3.out" }),
+    };
+    return moversRef.current;
+  };
+
+  const handleHoverStart = (project: Project) => {
+    if (prefersReducedMotion() || !window.matchMedia("(pointer: fine)").matches)
+      return;
+    setPreviewProject(project);
+    const panel = panelRef.current;
+    if (!panel) return;
+    activeRef.current = true;
+    gsap.killTweensOf(panel, "scale,rotate,autoAlpha");
+    gsap.fromTo(
+      panel,
+      { scale: 0.75, rotate: -6, autoAlpha: 0 },
+      { scale: 1, rotate: -3, autoAlpha: 1, duration: 0.5, ease: "back.out(1.7)" }
+    );
+  };
+
+  const handleHoverMove = (x: number, y: number) => {
+    if (!activeRef.current) return;
+    const m = ensureMovers();
+    m?.x(x + 36);
+    m?.y(y - 210);
+  };
+
+  const handleHoverEnd = () => {
+    if (!activeRef.current) return;
+    activeRef.current = false;
+    const panel = panelRef.current;
+    if (!panel) return;
+    gsap.killTweensOf(panel, "scale,rotate,autoAlpha");
+    gsap.to(panel, {
+      scale: 0.75,
+      rotate: 6,
+      autoAlpha: 0,
+      duration: 0.35,
+      ease: "power2.in",
+    });
+  };
 
   return (
     <section ref={ref} id="works" className="relative px-4 py-32 md:px-8">
@@ -91,9 +160,24 @@ export default function Works() {
       </p>
       <ul className="border-b border-fg/15">
         {projects.map((p) => (
-          <WorkRow key={p.slug} project={p} />
+          <WorkRow
+            key={p.slug}
+            project={p}
+            onHoverStart={handleHoverStart}
+            onHoverMove={handleHoverMove}
+            onHoverEnd={handleHoverEnd}
+          />
         ))}
       </ul>
+
+      {/* cursor-following live preview — desktop only, hidden from a11y tree */}
+      <div
+        ref={panelRef}
+        className="pointer-events-none fixed left-0 top-0 z-[70] hidden w-[340px] origin-center opacity-0 will-change-transform md:block"
+        aria-hidden="true"
+      >
+        {previewProject && <ProjectMock project={previewProject} />}
+      </div>
     </section>
   );
 }

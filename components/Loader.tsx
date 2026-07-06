@@ -11,14 +11,18 @@ const STEP_MS = 380;
 const DARK = "#0b0f0e";
 const LIGHT = "#ffffff";
 
-export default function Loader({ onDone }: { onDone: () => void }) {
+// Rendered as a sibling of FixedUI (in Providers), not inside the page
+// content wrapper — that wrapper is its own stacking context at z-10 in
+// layout.tsx, which would otherwise cap this z-[95] below FixedUI's nav
+// (z-75/80) regardless of the number used here. `started` in Home derives
+// from IntroContext instead of a callback, since this no longer lives
+// inside Home's tree.
+export default function Loader() {
   const { setGreetingActive } = useIntro();
   const [visible, setVisible] = useState(true);
   const [idx, setIdx] = useState(0);
   const [wiping, setWiping] = useState(false);
   const wipeRef = useRef<HTMLDivElement>(null);
-  const onDoneRef = useRef(onDone);
-  onDoneRef.current = onDone;
   const finishedRef = useRef(false);
 
   const finish = () => {
@@ -27,7 +31,6 @@ export default function Loader({ onDone }: { onDone: () => void }) {
     document.body.style.overflow = "";
     window.__lenis?.start();
     setGreetingActive(false);
-    onDoneRef.current();
     setVisible(false);
   };
 
@@ -62,7 +65,6 @@ export default function Loader({ onDone }: { onDone: () => void }) {
   useEffect(() => {
     if (!wiping || !wipeRef.current) return;
     setGreetingActive(false);
-    onDoneRef.current();
     const tween = gsap.fromTo(
       wipeRef.current,
       { scale: 0, xPercent: -50, yPercent: -50 },
@@ -95,6 +97,10 @@ export default function Loader({ onDone }: { onDone: () => void }) {
   if (!visible) return null;
 
   const darkStep = idx % 2 === 0;
+  const pct = wiping
+    ? 100
+    : Math.round((idx / Math.max(GREETINGS.length - 1, 1)) * 100);
+  const fg = darkStep ? LIGHT : DARK;
 
   return (
     <div
@@ -111,10 +117,41 @@ export default function Loader({ onDone }: { onDone: () => void }) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
         className="font-display text-[clamp(3rem,12vw,9rem)] font-bold leading-none"
-        style={{ color: darkStep ? LIGHT : DARK }}
+        style={{ color: fg }}
       >
         {GREETINGS[idx]}
       </motion.span>
+
+      {/* ticking percentage counter, bottom-left */}
+      <span
+        className="absolute bottom-8 left-6 font-display text-sm font-bold tracking-[0.2em] tabular-nums md:bottom-10 md:left-10 md:text-base"
+        style={{ color: fg, opacity: 0.75 }}
+      >
+        {String(pct).padStart(3, "0")}%
+      </span>
+
+      {/* progress rail, bottom edge */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-[3px]"
+        style={{ backgroundColor: fg, opacity: 0.15 }}
+      >
+        <div
+          className="h-full"
+          style={{
+            width: `${pct}%`,
+            backgroundColor: fg,
+            transition: "width 0.32s ease",
+          }}
+        />
+      </div>
+
+      <span
+        className="absolute bottom-8 right-6 text-sm font-medium uppercase tracking-[0.3em] md:bottom-10 md:right-10"
+        style={{ color: fg, opacity: 0.75 }}
+      >
+        Rohit Poudel
+      </span>
+
       {/* expanding reveal circle in the page background color */}
       <div
         ref={wipeRef}

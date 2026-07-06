@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Providers from "@/components/Providers";
+import AmbientGlow from "@/components/AmbientGlow";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -44,7 +45,9 @@ export default function RootLayout({
       </head>
       <body className="font-body bg-bg text-fg">
         <Providers>
+          <AmbientGlow />
           <div className="plus-grid" aria-hidden="true" />
+          <div className="grain-overlay" aria-hidden="true" />
           <div className="relative z-10">{children}</div>
         </Providers>
       </body>

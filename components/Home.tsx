@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import Loader from "@/components/Loader";
+import { useIntro } from "@/components/IntroContext";
 import Hero from "@/components/sections/Hero";
 import Approach from "@/components/sections/Approach";
 import Services from "@/components/sections/Services";
@@ -10,12 +9,11 @@ import HowIWork from "@/components/sections/HowIWork";
 import Contact from "@/components/sections/Contact";
 
 export default function Home() {
-  const [started, setStarted] = useState(false);
+  const { greetingActive } = useIntro();
 
   return (
     <main>
-      <Loader onDone={() => setStarted(true)} />
-      <Hero started={started} />
+      <Hero started={!greetingActive} />
       <Approach />
       <Services />
       <Works />

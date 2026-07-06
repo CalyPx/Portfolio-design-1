@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { scrollToTop } from "@/components/SmoothScroll";
 import { useIntro } from "@/components/IntroContext";
+import { useMagnetic } from "@/lib/useMagnetic";
+import { useScramble } from "@/lib/useScramble";
+import { attachSlideHover } from "@/lib/letterSlide";
 
 const MENU_ITEMS = [
   { label: "Home", hash: "#top" },
@@ -15,11 +18,58 @@ const MENU_ITEMS = [
   { label: "Contact", hash: "#contact" },
 ];
 
+function ScrambleMenuItem({
+  item,
+  index,
+  onSelect,
+}: {
+  item: { label: string; hash: string };
+  index: number;
+  onSelect: (hash: string) => void;
+}) {
+  const { ref, onMouseEnter } = useScramble(item.label);
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const el = btnRef.current;
+    if (!el) return;
+    return attachSlideHover(el, ".slide-letter", { minDist: 8, maxDist: 16 });
+  }, []);
+
+  return (
+    <motion.button
+      ref={btnRef}
+      type="button"
+      initial={{ y: 40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.08 + index * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      onClick={() => onSelect(item.hash)}
+      onMouseEnter={onMouseEnter}
+      data-cursor="hover"
+      className="group flex w-fit items-baseline gap-4 text-left font-display text-[clamp(2.2rem,6vw,4.5rem)] font-bold uppercase leading-[1.1]"
+    >
+      <span className="slide-letter transition-accent text-sm text-accent" aria-hidden="true">
+        0{index + 1}
+      </span>
+      <span
+        ref={ref}
+        className="slide-letter transition-colors duration-300 group-hover:text-accent"
+      >
+        {item.label}
+      </span>
+    </motion.button>
+  );
+}
+
 export default function FixedUI() {
   const { greetingActive } = useIntro();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [showTop, setShowTop] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuBtnRef = useMagnetic<HTMLButtonElement>(0.35, 70);
+  const logoRef = useMagnetic<HTMLAnchorElement>(0.3, 60);
+  const topBtnRef = useMagnetic<HTMLButtonElement>(0.4, 60);
+  const themeBtnRef = useMagnetic<HTMLButtonElement>(0.4, 60);
 
   useEffect(() => {
     const current = document.documentElement.getAttribute("data-theme");
@@ -67,9 +117,18 @@ export default function FixedUI() {
 
   return (
     <>
+      {/* Soft scrim behind the fixed top bar so scrolling page content —
+          section labels, headlines — never visually collides with the
+          MENU button or wordmark sitting on top of it. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-x-0 top-0 z-[75] h-28 bg-gradient-to-b from-bg/90 via-bg/40 to-transparent md:h-32"
+      />
+
       {/* MENU — top left. Hidden while the intro's greeting words are
           still cycling, so nothing but the greeting itself is on screen. */}
       <button
+        ref={menuBtnRef}
         type="button"
         onClick={() => setMenuOpen(true)}
         aria-label="Open menu"
@@ -89,6 +148,7 @@ export default function FixedUI() {
 
       {/* Wordmark — top right */}
       <Link
+        ref={logoRef}
         href="/"
         id="site-logo"
         aria-label="Rohit Poudel — home"
@@ -132,23 +192,12 @@ export default function FixedUI() {
 
             <nav className="flex flex-col gap-2">
               {MENU_ITEMS.map((item, i) => (
-                <motion.button
+                <ScrambleMenuItem
                   key={item.hash}
-                  type="button"
-                  initial={{ y: 40, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.08 + i * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  onClick={() => goTo(item.hash)}
-                  data-cursor="hover"
-                  className="group flex w-fit items-baseline gap-4 text-left font-display text-[clamp(2.2rem,6vw,4.5rem)] font-bold uppercase leading-[1.1]"
-                >
-                  <span className="transition-accent text-sm text-accent" aria-hidden="true">
-                    0{i + 1}
-                  </span>
-                  <span className="transition-colors duration-300 group-hover:text-accent">
-                    {item.label}
-                  </span>
-                </motion.button>
+                  item={item}
+                  index={i}
+                  onSelect={goTo}
+                />
               ))}
             </nav>
 
@@ -172,6 +221,7 @@ export default function FixedUI() {
         }`}
       >
         <button
+          ref={topBtnRef}
           onClick={scrollToTop}
           aria-label="Scroll to top"
           data-cursor="hover"
@@ -198,6 +248,7 @@ export default function FixedUI() {
           </svg>
         </button>
         <button
+          ref={themeBtnRef}
           onClick={toggleTheme}
           aria-label={
             theme === "dark" ? "Switch to light mode" : "Switch to dark mode"

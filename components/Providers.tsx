@@ -7,6 +7,8 @@ import { IntroProvider } from "@/components/IntroContext";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
 import FixedUI from "@/components/FixedUI";
+import SectionDots from "@/components/SectionDots";
+import Loader from "@/components/Loader";
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (
@@ -16,6 +18,8 @@ export default function Providers({ children }: { children: ReactNode }) {
           <SmoothScroll />
           <Cursor />
           <FixedUI />
+          <SectionDots />
+          <Loader />
           {children}
         </CaseTransitionProvider>
       </AccentProvider>

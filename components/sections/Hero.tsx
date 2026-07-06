@@ -2,8 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { gsap, prefersReducedMotion } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
 import { useSectionAccent } from "@/components/AccentContext";
+import { attachSlideHover } from "@/lib/letterSlide";
 
 const TAGS = [
   "AI INTEGRATION",
@@ -21,11 +22,6 @@ const NAME_LINES = [
 ];
 
 const EASE = [0.16, 1, 0.3, 1] as const;
-
-// magnetic-lift hover tuning
-const LIFT_RADIUS = 260;
-const MAX_LIFT = 46;
-const MAX_DRIFT = 18;
 
 interface HeroProps {
   started: boolean;
@@ -124,53 +120,35 @@ export default function Hero({ started }: HeroProps) {
     return () => mm.revert();
   }, []);
 
-  // Magnetic hover: every letter lifts toward the cursor's proximity,
-  // strongest right under it and fading out with distance — a continuous
-  // ripple across the whole name rather than one letter jumping at a time.
+  // Slide-on-hover: each letter kicks away from wherever the cursor enters
+  // it, at a randomized angle so neighboring letters never move in the
+  // same direction, then springs back — a scattered, tactile reaction
+  // instead of one uniform ripple.
   useEffect(() => {
-    if (prefersReducedMotion()) return;
-    if (!window.matchMedia("(pointer: fine)").matches) return;
     const container = nameRef.current;
     if (!container) return;
-
-    const letters = Array.from(
-      container.querySelectorAll<HTMLElement>(".hero-letter-inner")
-    );
-    const movers = letters.map((el) => ({
-      el,
-      x: gsap.quickTo(el, "x", { duration: 0.45, ease: "power3.out" }),
-      y: gsap.quickTo(el, "y", { duration: 0.35, ease: "power3.out" }),
-    }));
-
-    const onMove = (e: MouseEvent) => {
-      if (pinProgressRef.current > 0.01) return;
-      for (const m of movers) {
-        const rect = m.el.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
-        const falloff = Math.max(0, 1 - dist / LIFT_RADIUS);
-        const strength = falloff * falloff; // ease the drop-off
-        const dir = e.clientX < cx ? 1 : -1;
-        m.y(-MAX_LIFT * strength);
-        m.x(dir * MAX_DRIFT * strength);
-      }
-    };
-
-    const onLeave = () => {
-      for (const m of movers) {
-        m.x(0);
-        m.y(0);
-      }
-    };
-
-    container.addEventListener("mousemove", onMove, { passive: true });
-    container.addEventListener("mouseleave", onLeave);
-    return () => {
-      container.removeEventListener("mousemove", onMove);
-      container.removeEventListener("mouseleave", onLeave);
-    };
+    return attachSlideHover(container, ".hero-letter-inner", {
+      minDist: 20,
+      maxDist: 42,
+      canSkip: () => pinProgressRef.current > 0.01,
+    });
   }, []);
+
+  // The per-letter mask (.hero-letter) is overflow-hidden so the initial
+  // reveal-from-below animation stays clipped to one line height. Once
+  // that entrance finishes, release the clip — otherwise the hover slide
+  // above gets cut off against that same tight mask.
+  useEffect(() => {
+    if (!started) return;
+    const container = nameRef.current;
+    if (!container) return;
+    const t = setTimeout(() => {
+      container.querySelectorAll<HTMLElement>(".hero-letter").forEach((el) => {
+        el.style.overflow = "visible";
+      });
+    }, 1100);
+    return () => clearTimeout(t);
+  }, [started]);
 
   const marqueeItems = [...TAGS, ...TAGS];
 
