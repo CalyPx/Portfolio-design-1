@@ -1,26 +1,154 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --dark: #0b0f0e;
+  --light: #ffffff;
+  --accent-sage: #9dbe8d;
+  --accent-amber: #e8a33d;
+  --accent-sky: #7fb5d5;
+  --accent: var(--accent-sage);
+  --bg: var(--light);
+  --fg: var(--dark);
+}
+
+html[data-theme="dark"] {
+  --bg: var(--dark);
+  --fg: var(--light);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-accent: var(--accent);
+  --color-dark: var(--dark);
+  --color-light: var(--light);
+  --font-display: "PP Neue Montreal", var(--font-space-grotesk), -apple-system,
+    BlinkMacSystemFont, "Segoe UI", ui-sans-serif, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--bg);
+  overflow-x: clip;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  overflow-x: clip;
+  transition:
+    background-color 0.6s ease,
+    color 0.6s ease;
+}
+
+@media (pointer: fine) {
+  body,
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  label,
+  [role="button"] {
+    cursor: none;
+  }
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--dark);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Fixed engineering-blueprint plus-grid. Color follows --fg via mask. */
+.plus-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--fg);
+  opacity: 0.07;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 9.5v5M9.5 12h5' stroke='black' stroke-width='1'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 9.5v5M9.5 12h5' stroke='black' stroke-width='1'/%3E%3C/svg%3E");
+  mask-repeat: repeat;
+  -webkit-mask-repeat: repeat;
+}
+
+/* Outline/ghost display text that fills on hover (works tickers) */
+.text-ghost {
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--fg) 40%, transparent);
+  transition:
+    color 0.4s ease,
+    -webkit-text-stroke-color 0.4s ease;
+}
+
+.group:hover .text-ghost,
+.group:focus-visible .text-ghost {
+  color: var(--fg);
+  -webkit-text-stroke-color: transparent;
+}
+
+/* Infinite marquee — content must be duplicated exactly twice */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 30s) linear infinite;
+  will-change: transform;
+}
+
+.marquee-paused:hover .marquee-track,
+.group:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Elements whose color derives from --accent get a soft cross-section blend */
+.transition-accent {
+  transition:
+    color 0.6s ease,
+    background-color 0.6s ease,
+    border-color 0.6s ease,
+    fill 0.6s ease,
+    stroke 0.6s ease;
+}
+
+/* Underlined madlib inputs */
+.madlib-input {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid color-mix(in srgb, var(--fg) 30%, transparent);
+  font: inherit;
+  color: var(--accent);
+  padding: 0 0.15em;
+  transition: border-color 0.3s ease;
+}
+
+.madlib-input::placeholder {
+  color: color-mix(in srgb, var(--fg) 30%, transparent);
+}
+
+.madlib-input:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
 }
