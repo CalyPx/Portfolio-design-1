@@ -31,8 +31,17 @@ export function useCaseTransition() {
   return useContext(TransitionContext);
 }
 
-/** Curved "VIEW CASE" text on a circle, shared by cursor + transition badge */
-export function ViewCaseRing({ spin = true }: { spin?: boolean }) {
+/** Curved text on a circle, shared by cursor + transition badge + menu */
+export function ViewCaseRing({
+  spin = true,
+  text = "VIEW CASE",
+  pathId = "view-case-circle",
+}: {
+  spin?: boolean;
+  text?: string;
+  pathId?: string;
+}) {
+  const repeated = `${text} · ${text} ·`;
   return (
     <svg
       viewBox="0 0 100 100"
@@ -41,7 +50,7 @@ export function ViewCaseRing({ spin = true }: { spin?: boolean }) {
     >
       <defs>
         <path
-          id="view-case-circle"
+          id={pathId}
           d="M 50,50 m -33,0 a 33,33 0 1,1 66,0 a 33,33 0 1,1 -66,0"
         />
       </defs>
@@ -50,7 +59,7 @@ export function ViewCaseRing({ spin = true }: { spin?: boolean }) {
         style={{ fontSize: "12.5px", letterSpacing: "3.5px" }}
         className="font-display font-bold uppercase"
       >
-        <textPath href="#view-case-circle">VIEW CASE · VIEW CASE ·</textPath>
+        <textPath href={`#${pathId}`}>{repeated}</textPath>
       </text>
     </svg>
   );

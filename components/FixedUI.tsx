@@ -1,61 +1,83 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { scrollToTop } from "@/components/SmoothScroll";
 import { useIntro } from "@/components/IntroContext";
 import { useMagnetic } from "@/lib/useMagnetic";
-import { useScramble } from "@/lib/useScramble";
-import { attachSlideHover } from "@/lib/letterSlide";
 
 const MENU_ITEMS = [
-  { label: "Home", hash: "#top" },
-  { label: "Approach", hash: "#approach" },
-  { label: "Services", hash: "#services" },
-  { label: "Selected Works", hash: "#works" },
-  { label: "How I Work", hash: "#process" },
-  { label: "Contact", hash: "#contact" },
+  { label: "Home", hash: "#top", subtitle: "Back to the top" },
+  {
+    label: "Approach",
+    hash: "#approach",
+    subtitle: "How I think about building",
+  },
+  {
+    label: "Selected Works",
+    hash: "#works",
+    subtitle: "Case studies & shipped projects",
+  },
+  {
+    label: "How I Work",
+    hash: "#process",
+    subtitle: "Discover, define, build, ship",
+  },
+  { label: "Contact", hash: "#contact", subtitle: "Say hello, start a project" },
 ];
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 function ScrambleMenuItem({
   item,
   index,
   onSelect,
 }: {
-  item: { label: string; hash: string };
+  item: { label: string; hash: string; subtitle: string };
   index: number;
   onSelect: (hash: string) => void;
 }) {
-  const { ref, onMouseEnter } = useScramble(item.label);
-  const btnRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    const el = btnRef.current;
-    if (!el) return;
-    return attachSlideHover(el, ".slide-letter", { minDist: 8, maxDist: 16 });
-  }, []);
-
   return (
     <motion.button
-      ref={btnRef}
       type="button"
-      initial={{ y: 40, opacity: 0 }}
+      initial={{ y: 56, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.08 + index * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ delay: 0.22 + index * 0.06, duration: 0.6, ease: EASE }}
       onClick={() => onSelect(item.hash)}
-      onMouseEnter={onMouseEnter}
       data-cursor="hover"
-      className="group flex w-fit items-baseline gap-4 text-left font-display text-[clamp(2.2rem,6vw,4.5rem)] font-bold uppercase leading-[1.1]"
+      className="group flex w-fit flex-col text-left"
     >
-      <span className="slide-letter transition-accent text-sm text-accent" aria-hidden="true">
-        0{index + 1}
+      <span className="flex items-baseline gap-5 font-display text-[clamp(3.8rem,8.7vw,6.9rem)] font-black uppercase leading-[1.05] tracking-tight [-webkit-text-stroke:1px_currentColor]">
+        <span
+          className="text-sm font-bold text-dark/40 transition-colors duration-300 group-hover:text-dark"
+          aria-hidden="true"
+        >
+          0{index + 1}
+        </span>
+        <span className="relative inline-block">
+          <span className="relative inline-block">
+            {item.label}
+          </span>
+          {/* white wipe reveal: a duplicate copy grows in from the top
+              edge downward on hover, like a mask retracting */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 inline-block overflow-hidden text-light [clip-path:inset(0_0_100%_0)] transition-[clip-path] duration-500 ease-out group-hover:[clip-path:inset(0_0_0_0)]"
+          >
+            {item.label}
+          </span>
+        </span>
       </span>
-      <span
-        ref={ref}
-        className="slide-letter transition-colors duration-300 group-hover:text-accent"
-      >
-        {item.label}
+
+      {/* subtitle reveals on hover via the CSS grid-rows 0fr->1fr trick,
+          so it animates open/closed height smoothly with no JS needed */}
+      <span className="grid grid-rows-[0fr] pl-[3.2em] transition-[grid-template-rows] duration-[400ms] ease-out group-hover:grid-rows-[1fr]">
+        <span className="overflow-hidden">
+          <span className="block pt-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-dark/60 md:text-sm">
+            {item.subtitle}
+          </span>
+        </span>
       </span>
     </motion.button>
   );
@@ -66,6 +88,7 @@ export default function FixedUI() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [showTop, setShowTop] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [origin, setOrigin] = useState({ x: 0, y: 0 });
   const menuBtnRef = useMagnetic<HTMLButtonElement>(0.35, 70);
   const logoRef = useMagnetic<HTMLAnchorElement>(0.3, 60);
   const topBtnRef = useMagnetic<HTMLButtonElement>(0.4, 60);
@@ -130,7 +153,10 @@ export default function FixedUI() {
       <button
         ref={menuBtnRef}
         type="button"
-        onClick={() => setMenuOpen(true)}
+        onClick={(e) => {
+          setOrigin({ x: e.clientX, y: e.clientY });
+          setMenuOpen(true);
+        }}
         aria-label="Open menu"
         data-cursor="hover"
         className={`fixed left-5 top-6 z-[80] flex items-center gap-4 transition-opacity duration-300 md:left-9 md:top-8 ${
@@ -163,15 +189,24 @@ export default function FixedUI() {
         </span>
       </Link>
 
-      {/* Full-screen menu overlay */}
+      {/* Full-screen menu overlay — reveals via a clip-path circle expanding
+          from wherever the MENU button was clicked, rather than a plain
+          fade, for a "grows out of the click" feel. */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35 }}
-            className="fixed inset-0 z-[85] flex flex-col justify-center bg-bg px-6 md:px-12"
+            initial={{
+              clipPath: `circle(0% at ${origin.x}px ${origin.y}px)`,
+            }}
+            animate={{
+              clipPath: `circle(150% at ${origin.x}px ${origin.y}px)`,
+            }}
+            exit={{
+              clipPath: `circle(0% at ${origin.x}px ${origin.y}px)`,
+            }}
+            transition={{ duration: 0.85, ease: EASE }}
+            className="transition-accent fixed inset-0 z-[85] flex flex-col justify-between overflow-y-auto px-6 py-16 text-dark md:px-14 md:py-20"
+            style={{ backgroundColor: "var(--accent)" }}
             role="dialog"
             aria-modal="true"
             aria-label="Site menu"
@@ -181,34 +216,110 @@ export default function FixedUI() {
               onClick={() => setMenuOpen(false)}
               aria-label="Close menu"
               data-cursor="hover"
-              className="absolute left-5 top-6 flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.15em] md:left-9 md:top-8"
+              className="group absolute left-5 top-6 flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.15em] md:left-9 md:top-8"
             >
-              <span className="relative block h-5 w-7" aria-hidden="true">
-                <span className="absolute left-0 top-1/2 block h-[2px] w-7 rotate-45 bg-fg" />
-                <span className="absolute left-0 top-1/2 block h-[2px] w-7 -rotate-45 bg-fg" />
+              <span
+                className="relative block h-5 w-7 transition-transform duration-500 ease-out group-hover:rotate-90"
+                aria-hidden="true"
+              >
+                <span className="absolute left-0 top-1/2 block h-[2px] w-7 rotate-45 bg-dark" />
+                <span className="absolute left-0 top-1/2 block h-[2px] w-7 -rotate-45 bg-dark" />
               </span>
-              Close
+              <span className="relative">
+                Close
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-0 -bottom-1 h-px origin-left scale-x-0 bg-dark transition-transform duration-300 ease-out group-hover:scale-x-100"
+                />
+              </span>
             </button>
 
-            <nav className="flex flex-col gap-2">
-              {MENU_ITEMS.map((item, i) => (
-                <ScrambleMenuItem
-                  key={item.hash}
-                  item={item}
-                  index={i}
-                  onSelect={goTo}
-                />
-              ))}
-            </nav>
+            <div className="grid min-h-0 flex-1 grid-cols-1 items-center gap-10 py-8 md:grid-cols-[1fr_auto]">
+              <nav className="flex flex-col gap-1 md:gap-2">
+                {MENU_ITEMS.map((item, i) => (
+                  <ScrambleMenuItem
+                    key={item.hash}
+                    item={item}
+                    index={i}
+                    onSelect={goTo}
+                  />
+                ))}
+              </nav>
 
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="mt-12 text-sm uppercase tracking-[0.2em] opacity-60"
-            >
-              rohitpoudel020@gmail.com · Kathmandu, Nepal
-            </motion.p>
+              {/* right rail — quiet info panel, echoing the eyebrow-label
+                  language used across the rest of the site */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6, ease: EASE }}
+                className="hidden flex-col gap-10 text-right md:flex"
+              >
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-dark/60">
+                    Get in touch
+                  </p>
+                  <a
+                    href="mailto:rohitpoudel020@gmail.com"
+                    data-cursor="hover"
+                    className="group relative mt-3 inline-block font-display text-lg font-bold uppercase tracking-wide"
+                  >
+                    rohitpoudel020@gmail.com
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-x-0 -bottom-0.5 h-px origin-right scale-x-100 bg-dark transition-transform duration-300 ease-out group-hover:origin-left group-hover:scale-x-0"
+                    />
+                  </a>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-dark/60">
+                    Location
+                  </p>
+                  <p className="mt-3 font-display text-lg font-bold uppercase tracking-wide">
+                    Kathmandu, Nepal
+                    <br />
+                    Working worldwide
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+
+            <div className="flex shrink-0 items-center justify-between pt-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-dark/60 md:hidden">
+                rohitpoudel020@gmail.com · Kathmandu, Nepal
+              </p>
+              <span />
+              {/* circular back button — a second way out of the menu,
+                  distinct from "Close": rotates the arrow and fills solid
+                  on hover for a satisfying, tactile click target */}
+              <motion.button
+                type="button"
+                onClick={() => setMenuOpen(false)}
+                aria-label="Back to site"
+                data-cursor="hover"
+                initial={{ opacity: 0, scale: 0.7 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.55, duration: 0.5, ease: EASE }}
+                className="group hidden h-16 w-16 items-center justify-center rounded-full border-2 border-dark transition-colors duration-300 hover:bg-dark md:flex"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  aria-hidden="true"
+                  className="transition-transform duration-[400ms] ease-out group-hover:rotate-45"
+                >
+                  <path
+                    d="M4 10h12M10 4l6 6-6 6"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-dark transition-colors duration-300 group-hover:text-[var(--accent)]"
+                  />
+                </svg>
+              </motion.button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -198,7 +198,7 @@ export default function Contact() {
         Contact
       </p>
 
-      <div className="max-w-6xl space-y-8 font-body text-[clamp(2.7rem,3.5vw,3.5rem)] font-normal leading-[1.4]">
+      <div className="max-w-6xl space-y-8 font-body text-[clamp(2.5rem,3.1vw,3.5rem)] font-normal leading-[1.4]">
         <p className="flex flex-wrap items-center gap-x-2 md:flex-nowrap md:whitespace-nowrap">
           <span>Hey Rohit! My name is</span>
           <input
