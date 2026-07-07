@@ -17,9 +17,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Rohit Poudel — AI/ML Full-Stack Builder",
+  title: "Rohit Poudel | Developer & AI Enthusiast",
   description:
-    "18-year-old AI/ML-focused full-stack builder from Kathmandu, Nepal. Team lead of VagaBond. I design & build AI-integrated products that ship in Nepal and scale for research.",
+    "18-year-old developer and AI enthusiast from Kathmandu, Nepal. Building intelligent applications and exploring emerging tech, learning through self-study, hackathons, and competitions.",
 };
 
 const themeInit = `try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}`;

@@ -42,7 +42,7 @@ function WorkRow({
         data-cursor="view"
         className="group grid grid-cols-[auto_1fr] items-center gap-5 border-t border-fg/15 py-7 md:grid-cols-[auto_1fr_auto] md:gap-10 md:py-0"
         style={{ "--row-accent": accentHex } as React.CSSProperties}
-        aria-label={`${project.name} — ${project.category}, ${project.year}. View case study.`}
+        aria-label={`${project.name}, ${project.category}, ${project.year}. View case study.`}
       >
         {/* numbered badge */}
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-fg/30 font-display text-sm font-bold transition-colors duration-300 group-hover:border-[var(--row-accent)] group-hover:text-[var(--row-accent)] md:h-14 md:w-14">

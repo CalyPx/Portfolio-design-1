@@ -7,10 +7,10 @@ import { useIntro } from "@/components/IntroContext";
 
 const SECTIONS = [
   { hash: "#top", label: "Home" },
+  { hash: "#about", label: "About" },
   { hash: "#approach", label: "Approach" },
   { hash: "#services", label: "Services" },
   { hash: "#works", label: "Selected Works" },
-  { hash: "#process", label: "How I Work" },
   { hash: "#contact", label: "Contact" },
 ];
 

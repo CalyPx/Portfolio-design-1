@@ -19,7 +19,7 @@ interface Panel {
 const PANELS: Panel[] = [
   {
     word: "INTERFACES.",
-    desc: "Frontends that feel engineered, not decorated. Design systems, kinetic interaction, and maps people actually read — built to hold up on a ward office's five-year-old Android as well as it does in a demo.",
+    desc: "Design systems, kinetic interaction, interfaces that hold up outside a perfect demo. This is the frontend side I keep coming back to and keep getting better at.",
     tools: [
       { name: "Next.js", stem: 96 },
       { name: "React", stem: 56 },
@@ -30,7 +30,7 @@ const PANELS: Panel[] = [
   },
   {
     word: "SYSTEMS.",
-    desc: "The plumbing that lets a hackathon build survive contact with production: APIs, data models, deploys, and the occasional microcontroller. Boring on purpose, fast where it counts.",
+    desc: "APIs, data models, deploys, and the occasional microcontroller. This is the plumbing that keeps a project from falling over, and I'm drawn to the unglamorous parts that make everything else work.",
     tools: [
       { name: "FastAPI", stem: 92 },
       { name: "PostgreSQL", stem: 60 },
@@ -41,7 +41,7 @@ const PANELS: Panel[] = [
   },
   {
     word: "INTELLIGENCE.",
-    desc: "The layer that turns a form into a product: LLM routing, vision pipelines, and classical ML where it quietly beats a prompt. Models chosen for the constraint, not the leaderboard.",
+    desc: "LLM routing, vision pipelines, and classical ML. I'm still learning where a real model quietly beats a clever prompt, and picking tools for the constraint, not the leaderboard.",
     tools: [
       { name: "XGBoost", stem: 88 },
       { name: "scikit-learn", stem: 52 },
@@ -212,7 +212,7 @@ export default function Services() {
             <span className="text-accent" aria-hidden="true">
               {"◇ "}
             </span>
-            Services &amp; Toolkit — 0{i + 1}/03
+            What I&rsquo;m Learning · 0{i + 1}/03
           </p>
           <h3 className="mt-4 font-display text-[clamp(2.6rem,11vw,5rem)] font-bold uppercase leading-[0.95] tracking-[-0.02em]">
             {panel.word}
@@ -251,7 +251,7 @@ export default function Services() {
             <span className="text-accent" aria-hidden="true">
               {"◇ "}
             </span>
-            Services &amp; Toolkit —{" "}
+            What I&rsquo;m Learning ·{" "}
             <span className="relative inline-grid align-baseline">
               {PANELS.map((panel, i) => (
                 <span key={panel.word} className="svc-index col-start-1 row-start-1">

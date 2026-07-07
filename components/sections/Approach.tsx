@@ -10,22 +10,22 @@ interface Word {
 }
 
 const STATEMENT: Word[] = [
+  { text: "I" },
+  { text: "LEARN" },
+  { text: "BY" },
+  { text: "BUILDING", accent: true },
   { text: "REAL" },
-  { text: "PROBLEMS" },
+  { text: "THINGS" },
+  { text: "FOR" },
+  { text: "REAL" },
+  { text: "PEOPLE" },
   { text: "IN" },
-  { text: "NEPAL" },
-  { text: "DESERVE" },
-  { text: "REAL" },
-  { text: "PRODUCTS", accent: true },
-  { text: "—" },
-  { text: "BUILT" },
-  { text: "TO" },
-  { text: "SHIP,", accent: true },
-  { text: "GROUNDED" },
-  { text: "ENOUGH" },
-  { text: "TO" },
-  { text: "BE" },
-  { text: "RESEARCH.", accent: true },
+  { text: "NEPAL," },
+  { text: "TURNING" },
+  { text: "IDEAS" },
+  { text: "INTO" },
+  { text: "WORKING" },
+  { text: "PRODUCTS.", accent: true },
 ];
 
 export default function Approach() {
@@ -108,7 +108,7 @@ export default function Approach() {
         <span className="text-accent" aria-hidden="true">
           {"◇ "}
         </span>
-        Approach &amp; Vision
+        Why I Build
       </p>
       <h2 className="font-display text-[clamp(2.4rem,7.4vw,7.5rem)] font-bold uppercase leading-[1.04] tracking-tight">
         {STATEMENT.map((w, i) => (

@@ -12,7 +12,7 @@ const TAGS = [
   "COMPUTER VISION",
   "CIVIC-TECH",
   "DATA PIPELINES",
-  "HACKATHON LEAD",
+  "SELF-TAUGHT",
 ];
 
 // like the reference: plain first line, two accent letters in the surname
@@ -207,9 +207,9 @@ export default function Hero({ started }: HeroProps) {
           data-cursor="magnify"
           className="mt-4 mb-8 self-end px-4 text-right font-display text-[clamp(1rem,1.9vw,1.5rem)] font-bold uppercase leading-relaxed md:mb-10 md:px-10"
         >
-          I design &amp; build AI-integrated products
+          Developer &amp; AI enthusiast building intelligent apps
           <br />
-          that ship in Nepal and scale for research.
+          and learning as I go, through self-study, hackathons, and competitions.
         </motion.p>
 
         <motion.div

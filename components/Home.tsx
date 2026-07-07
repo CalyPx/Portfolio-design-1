@@ -2,10 +2,10 @@
 
 import { useIntro } from "@/components/IntroContext";
 import Hero from "@/components/sections/Hero";
+import About from "@/components/sections/About";
 import Approach from "@/components/sections/Approach";
 import Services from "@/components/sections/Services";
 import Works from "@/components/sections/Works";
-import HowIWork from "@/components/sections/HowIWork";
 import Contact from "@/components/sections/Contact";
 
 export default function Home() {
@@ -14,10 +14,10 @@ export default function Home() {
   return (
     <main>
       <Hero started={!greetingActive} />
+      <About />
       <Approach />
       <Services />
       <Works />
-      <HowIWork />
       <Contact />
     </main>
   );

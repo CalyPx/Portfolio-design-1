@@ -6,7 +6,14 @@ import { useSectionAccent } from "@/components/AccentContext";
 import { useMagnetic } from "@/lib/useMagnetic";
 
 const EMAIL = "rohitpoudel020@gmail.com";
-const TOPICS = ["Hackathon", "Research / Academic", "Freelance"];
+const GITHUB_URL = "https://github.com/calypx";
+const LINKEDIN_URL = "https://www.linkedin.com/in/rohit-poudel-633364310/";
+const TOPICS = [
+  "Hackathon",
+  "Research / Academic",
+  "Study Together",
+  "Just Saying Hi",
+];
 const CHANNELS = ["Email", "WhatsApp"];
 
 const BLOB_COLORS = [
@@ -171,7 +178,7 @@ export default function Contact() {
   };
 
   const send = () => {
-    const subject = `${topic || "hello"} — ${name || "hello"} via portfolio`;
+    const subject = `${topic || "hello"} - ${name || "hello"} via portfolio`;
     const body = [
       `Hey Rohit! My name is ${name || "…"} and I'm from ${from || "…"}.`,
       `Let's talk about ${topic || "…"}.`,
@@ -309,10 +316,32 @@ export default function Contact() {
         </a>
       </p>
 
+      <p className="flex items-center justify-center gap-6 text-sm font-medium uppercase tracking-[0.2em] opacity-70 md:text-base">
+        <a
+          href={GITHUB_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="transition-accent underline decoration-transparent underline-offset-4 hover:decoration-accent"
+          data-cursor="hover"
+        >
+          GitHub
+        </a>
+        <span aria-hidden="true">·</span>
+        <a
+          href={LINKEDIN_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="transition-accent underline decoration-transparent underline-offset-4 hover:decoration-accent"
+          data-cursor="hover"
+        >
+          LinkedIn
+        </a>
+      </p>
+
       <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-fg/15 py-5 text-xs uppercase tracking-[0.2em] opacity-50">
         <span>© 2026 Rohit Poudel</span>
-        <span>Kathmandu · 27.7172° N, 85.3240° E</span>
-        <span>Team VagaBond</span>
+        <span>Kathmandu · </span>
+        <span>Made by Rohit</span>
       </footer>
     </section>
   );

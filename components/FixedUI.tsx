@@ -7,8 +7,12 @@ import { scrollToTop } from "@/components/SmoothScroll";
 import { useIntro } from "@/components/IntroContext";
 import { useMagnetic } from "@/lib/useMagnetic";
 
+const GITHUB_URL = "https://github.com/calypx";
+const LINKEDIN_URL = "https://www.linkedin.com/in/rohit-poudel-633364310/";
+
 const MENU_ITEMS = [
   { label: "Home", hash: "#top", subtitle: "Back to the top" },
+  { label: "About", hash: "#about", subtitle: "Who I am & education" },
   {
     label: "Approach",
     hash: "#approach",
@@ -19,12 +23,7 @@ const MENU_ITEMS = [
     hash: "#works",
     subtitle: "Case studies & shipped projects",
   },
-  {
-    label: "How I Work",
-    hash: "#process",
-    subtitle: "Discover, define, build, ship",
-  },
-  { label: "Contact", hash: "#contact", subtitle: "Say hello, start a project" },
+  { label: "Contact", hash: "#contact", subtitle: "Say hello" },
 ];
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -177,7 +176,7 @@ export default function FixedUI() {
         ref={logoRef}
         href="/"
         id="site-logo"
-        aria-label="Rohit Poudel — home"
+        aria-label="Rohit Poudel, home"
         className="fixed right-6 top-5 z-[80] font-display text-4xl font-bold leading-none md:right-10 md:top-7"
         data-cursor="hover"
       >
@@ -276,9 +275,58 @@ export default function FixedUI() {
                   </p>
                   <p className="mt-3 font-display text-lg font-bold uppercase tracking-wide">
                     Kathmandu, Nepal
-                    <br />
-                    Working worldwide
                   </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-dark/60">
+                    Resume
+                  </p>
+                  <a
+                    href="/Rohit_Poudel_CV.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-cursor="hover"
+                    className="group relative mt-3 inline-block font-display text-lg font-bold uppercase tracking-wide"
+                  >
+                    Download CV
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-x-0 -bottom-0.5 h-px origin-right scale-x-100 bg-dark transition-transform duration-300 ease-out group-hover:origin-left group-hover:scale-x-0"
+                    />
+                  </a>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-dark/60">
+                    Elsewhere
+                  </p>
+                  <div className="mt-3 flex flex-col items-end gap-1.5">
+                    <a
+                      href={GITHUB_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-cursor="hover"
+                      className="group relative inline-block w-fit font-display text-lg font-bold uppercase tracking-wide"
+                    >
+                      GitHub
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-x-0 -bottom-0.5 h-px origin-right scale-x-100 bg-dark transition-transform duration-300 ease-out group-hover:origin-left group-hover:scale-x-0"
+                      />
+                    </a>
+                    <a
+                      href={LINKEDIN_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-cursor="hover"
+                      className="group relative inline-block w-fit font-display text-lg font-bold uppercase tracking-wide"
+                    >
+                      LinkedIn
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-x-0 -bottom-0.5 h-px origin-right scale-x-100 bg-dark transition-transform duration-300 ease-out group-hover:origin-left group-hover:scale-x-0"
+                      />
+                    </a>
+                  </div>
                 </div>
               </motion.div>
             </div>
