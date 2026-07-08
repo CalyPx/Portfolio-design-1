@@ -25,7 +25,7 @@ function Section({
       transition={{ duration: 0.8, ease: EASE }}
       className="grid gap-4 border-t border-fg/15 py-14 md:grid-cols-[220px_1fr] md:gap-12"
     >
-      <p className="transition-accent text-xs font-medium uppercase tracking-[0.3em] text-accent">
+      <p className="transition-accent text-xs font-medium uppercase tracking-[0.3em] text-accent-ink">
         <span aria-hidden="true">{"◇ "}</span>
         {label}
       </p>
@@ -80,7 +80,7 @@ export default function CaseStudy({
           transition={{ duration: 1, ease: EASE, delay: 0.15 }}
           className="relative z-10"
         >
-          <ProjectMock project={project} />
+          <ProjectMock project={project} priority />
         </motion.div>
 
         {/* title + pills */}
@@ -108,22 +108,69 @@ export default function CaseStudy({
               )
             )}
           </div>
+
+          {(project.links?.live || project.links?.github) && (
+            <div className="mt-8 flex flex-wrap items-center gap-6">
+              {project.links.live && (
+                <a
+                  href={project.links.live}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor="hover"
+                  className="group relative inline-flex items-center gap-2 font-display text-lg font-bold uppercase tracking-wide"
+                >
+                  Visit live site
+                  <span
+                    aria-hidden="true"
+                    className="transition-accent inline-block text-accent-ink transition-transform duration-500 ease-out group-hover:translate-x-1 group-hover:-translate-y-1"
+                  >
+                    ↗
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 -bottom-1 h-px origin-left scale-x-100 bg-fg transition-transform duration-300 ease-out group-hover:scale-x-0"
+                  />
+                </a>
+              )}
+              {project.links.github && (
+                <a
+                  href={project.links.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor="hover"
+                  className="group relative inline-flex items-center gap-2 font-display text-lg font-bold uppercase tracking-wide"
+                >
+                  View source
+                  <span
+                    aria-hidden="true"
+                    className="transition-accent inline-block text-accent-ink transition-transform duration-500 ease-out group-hover:translate-x-1 group-hover:-translate-y-1"
+                  >
+                    ↗
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 -bottom-1 h-px origin-left scale-x-100 bg-fg transition-transform duration-300 ease-out group-hover:scale-x-0"
+                  />
+                </a>
+              )}
+            </div>
+          )}
         </motion.div>
       </div>
 
       {/* case body */}
       <div className="mt-24">
         <Section label="Problem">
-          <p data-cursor="magnify">{project.problem}</p>
+          <p>{project.problem}</p>
         </Section>
         <Section label="Approach">
-          <p data-cursor="magnify">{project.approach}</p>
+          <p>{project.approach}</p>
         </Section>
         <Section label="What I Built">
           <ul className="space-y-4">
             {project.built.map((item) => (
               <li key={item} className="flex gap-3">
-                <span className="transition-accent mt-1 text-accent" aria-hidden="true">
+                <span className="transition-accent mt-1 text-accent-ink" aria-hidden="true">
                   ◇
                 </span>
                 <span>{item}</span>
@@ -144,7 +191,7 @@ export default function CaseStudy({
           </div>
         </Section>
         <Section label="Result & Impact">
-          <p data-cursor="magnify">{project.result}</p>
+          <p>{project.result}</p>
         </Section>
         <Section label="What I'd Do Differently">
           <p className="transition-accent border-l-2 border-accent pl-5 italic opacity-90">
@@ -177,7 +224,7 @@ export default function CaseStudy({
           </span>
           <span
             aria-hidden="true"
-            className="transition-accent text-4xl text-accent transition-transform duration-500 group-hover:translate-x-4 md:text-6xl"
+            className="transition-accent text-4xl text-accent-ink transition-transform duration-500 group-hover:translate-x-4 md:text-6xl"
           >
             →
           </span>

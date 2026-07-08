@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useSectionAccent } from "@/components/AccentContext";
 import { useMagnetic } from "@/lib/useMagnetic";
-import { gsap, prefersReducedMotion } from "@/lib/gsap";
 
 const BIO =
   "I'm an 18-year-old +2 Science student from Kathmandu. Outside of class I teach myself full-stack development and applied AI, mostly by building things: a hackathon project over a weekend, or something I just wanted to try at home. I'd rather actually understand what I'm building than make it look perfect, then put it in front of people who can use it.";
@@ -49,46 +48,6 @@ const wordItem = {
   },
 };
 
-/** Counts a GPA up from 0 once it scrolls into view, instead of just
-    appearing — a small "still loading" flourish for what is otherwise a
-    plain data readout. */
-function GpaCounter({ value }: { value: number }) {
-  const ref = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (prefersReducedMotion()) {
-      el.textContent = value.toFixed(2);
-      return;
-    }
-    el.textContent = "0.00";
-    const counter = { v: 0 };
-    let played = false;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting || played) return;
-          played = true;
-          gsap.to(counter, {
-            v: value,
-            duration: 1.1,
-            ease: "power2.out",
-            onUpdate: () => {
-              el.textContent = counter.v.toFixed(2);
-            },
-          });
-        });
-      },
-      { threshold: 0.4 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [value]);
-
-  return <span ref={ref}>0.00</span>;
-}
-
 function EducationRow({ entry }: { entry: EducationEntry }) {
   const [hovered, setHovered] = useState(false);
 
@@ -115,7 +74,7 @@ function EducationRow({ entry }: { entry: EducationEntry }) {
         </p>
         <p className="mt-2 text-sm opacity-70 md:text-base">{entry.school}</p>
         <p className="mt-1 text-xs uppercase tracking-[0.15em] opacity-50">
-          GPA <GpaCounter value={entry.gpa} /> · {entry.year}
+          GPA {entry.gpa.toFixed(2)} · {entry.year}
         </p>
       </motion.div>
     </li>
@@ -133,12 +92,12 @@ export default function About() {
       id="about"
       className="relative px-4 py-28 md:px-8 md:py-36"
     >
-      <p className="transition-accent mb-12 text-[13px] font-medium uppercase tracking-[0.3em]">
-        <span className="text-accent" aria-hidden="true">
+      <h2 className="transition-accent mb-12 text-[13px] font-medium uppercase tracking-[0.3em]">
+        <span className="text-accent-ink" aria-hidden="true">
           {"◇ "}
         </span>
         Who I Am
-      </p>
+      </h2>
 
       <div className="grid gap-16 md:grid-cols-[1.2fr_1fr] md:gap-12">
         <div>
@@ -174,7 +133,7 @@ export default function About() {
             Download CV
             <span
               aria-hidden="true"
-              className="transition-accent inline-block text-accent transition-transform duration-500 ease-out group-hover:translate-x-1 group-hover:-translate-y-1"
+              className="transition-accent inline-block text-accent-ink transition-transform duration-500 ease-out group-hover:translate-x-1 group-hover:-translate-y-1"
             >
               ↗
             </span>

@@ -22,6 +22,11 @@ export interface Project {
   stack: string[];
   result: string;
   differently: string;
+  /** Path under /public to a real product screenshot. */
+  image: string;
+  /** Optional second screenshot shown in dark mode (e.g. a themed UI). */
+  imageDark?: string;
+  links?: { live?: string; github?: string };
 }
 
 export const projects: Project[] = [
@@ -29,7 +34,7 @@ export const projects: Project[] = [
     slug: "sunuwa",
     number: "01",
     name: "Sunuwa",
-    displayName: "SUNUWA (सुनुवाइ)",
+    displayName: "SUNUWA (सुनुवा)",
     category: "Civic Tech · AI Routing",
     year: "2026",
     accent: "sage",
@@ -50,6 +55,8 @@ export const projects: Project[] = [
       "Runner-up at CivicCode Hackathon 2026. The judges' demo ran on real complaint categories from an actual ward's registry structure, and routing held up against deliberately messy, colloquial Nepali input. The clustering layer collapsed a seeded batch of duplicate complaints into single prioritized tickets exactly as designed.",
     differently:
       "I'd design the offline-first flow before the dashboard. Ward offices lose connectivity constantly, and the version we demoed quietly assumed a stable connection. The real product needs to queue and sync instead.",
+    image: "/images/sunuwa_hero.png",
+    links: { github: "https://github.com/CalyPx/Sunuwa" },
   },
   {
     slug: "quakesafe",
@@ -74,6 +81,8 @@ export const projects: Project[] = [
       "74% accuracy on held-out buildings across damage grades, which is strong for tabular structural data where even engineers disagree on borderline cases. The explainability layer mattered most in feedback: planners trusted a prediction that said why.",
     differently:
       "I'd calibrate the model's confidence, not just its accuracy. A planner acting on a 74%-accurate model needs to know which predictions are the shaky ones, and calibration curves should have shipped in v1.",
+    image: "/images/quakesafe_hero.jpg",
+    links: { github: "https://github.com/CalyPx/earthquake-damage-prediction" },
   },
   {
     slug: "harvo",
@@ -98,6 +107,8 @@ export const projects: Project[] = [
       "A working marketplace where the full farmer journey (list by voice, get matched, agree on price) runs end to end in Nepali. The spoilage score changed buyer behavior in testing: urgent listings moved first, which is exactly the incentive the market needed.",
     differently:
       "I'd test the voice flow with actual farmers earlier. Our first prompt designs assumed standard Nepali; real users code-switch and use crop names that vary by district, and the vocabulary layer had to be rebuilt around that.",
+    image: "/images/harvo_hero.png",
+    links: { github: "https://github.com/CalyPx/Harvo" },
   },
   {
     slug: "sajhadoctor",
@@ -122,34 +133,45 @@ export const projects: Project[] = [
       "A complete consultation loop running in both languages. The design decision that mattered most was the humblest one: text-first fallback made the platform usable on connections where every video-first competitor simply fails.",
     differently:
       "I'd involve a practicing rural health worker from week one. The intake questions we wrote were medically reasonable but ordered wrong for how patients actually describe symptoms, and a nurse fixed the order in about ten minutes.",
+    image: "/images/sajhadoctor_hero.png",
+    links: {
+      live: "https://sajhadoctor.vercel.app/",
+      github: "https://github.com/CalyPx/SajhaDoctor",
+    },
   },
   {
-    slug: "iot-residence",
+    slug: "nepalprep",
     number: "05",
-    name: "IoT-Based Residence",
-    displayName: "SMART RESIDENCE",
-    category: "IoT · Home Automation",
-    year: "2024",
+    name: "NepalPrep",
+    displayName: "NEPALPREP",
+    category: "Ed-Tech · Exam Prep",
+    year: "2026",
     accent: "amber",
-    tagline: "A fully automated house: rainwater harvesting, solar tracking, fire alerts, and security, all run from one app.",
+    tagline:
+      "Nepal's CEE prep platform — topic-wise MCQs, timed mock exams, past papers, and real progress analytics, free.",
     problem:
-      "Most IoT class projects automate one thing, like a single relay switching a single light. I wanted to see what it actually takes to automate a real house: water, power, safety, and security as one connected system instead of ten disconnected demos.",
+      "Every year, tens of thousands of Nepali students sit the CEE (the medical-college entrance exam), and prep resources are scattered: photocopied question banks, disorganized Facebook groups, and PDFs with no way to tell whether you're actually improving.",
     approach:
-      "Wire every subsystem into its own sensor-and-actuator loop, then bring all of it under a single Blynk app instead of leaving each one as an isolated prototype. If a system couldn't be checked or triggered from the same dashboard as everything else, it didn't count as done.",
+      "Bring structured, topic-wise practice, realistic timed mocks, and real analytics into one free web app. Firebase handles auth and the durable data (scores, study trackers); quiz-in-progress state — question order, timer, bookmarks, answers — lives in localStorage instead, so it's instant and costs nothing to write on every keystroke.",
     built: [
-      "Automated rainwater harvesting that collects and distributes based on sensor readings, not a manual valve",
-      "Smart irrigation that waters on real soil-moisture conditions rather than a fixed timer",
-      "A solar-tracking mount that follows the sun through the day to pull more output from the same panel",
-      "LPG leak and fire detection that raises an alert before a small problem becomes a dangerous one",
-      "An automatic gate and a rain-sensing system that pulls hanging clothes under cover on its own",
-      "Laser-beam tripwire security and piezoelectric street lights that harvest energy from footsteps",
-      "A Blynk app integration tying every subsystem above into one real-time control and monitoring dashboard",
+      "A topic-wise question bank organized subject → chapter → sub-topic, with instant feedback and a full explanation on every question",
+      "A Random Mix mode that shuffles questions across a whole subject for interleaved, exam-realistic practice instead of block memorization",
+      "Full-length, 2-hour, 100-question timed mock exams pulled from the live question bank, with instant scoring",
+      "An auto-save quiz engine that checkpoints progress after every question, so a closed tab never means lost work",
+      "A statistics dashboard: accuracy by subject, time per question, weak-topic surfacing, and a Bikram Sambat calendar heatmap of daily study activity",
+      "Day-streak tracking and a per-chapter study tracker with deadlines, synced to the cloud",
     ],
-    stack: ["Arduino / ESP32", "Blynk", "Sensors (rain, moisture, gas, LDR)", "Relays & Actuators", "Solar Tracking"],
+    stack: ["React", "Vite", "Firebase Auth", "Firestore", "React Router", "CSS Modules"],
     result:
-      "A working prototype where the gate, the fire alarm, the irrigation, and everything else could all be triggered and watched from one phone screen, instead of a breadboard of separate demos that only ever worked one at a time.",
+      "A free, fully responsive platform covering the full CEE prep loop — practice, mock exam, and analytics — with email/Google auth gated behind mandatory verification, and dark mode that respects system preference.",
     differently:
-      "I'd plan the wiring for serviceability before building it, not after. Debugging eight interlinked subsystems sharing a control board taught me more about cable management than any single line of code.",
+      "I'd move the Firebase client config into environment variables from day one. It isn't a secret by design — Firestore rules and domain allowlisting do the real protecting — but treating it that way from the start is the right habit, not a retrofit.",
+    image: "/images/NepalPrep_hero_light.png",
+    imageDark: "/images/NepalPrep_hero_dark.png",
+    links: {
+      live: "https://nepalprep.vercel.app/",
+      github: "https://github.com/CalyPx/NepalPrep",
+    },
   },
 ];
 

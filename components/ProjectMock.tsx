@@ -1,7 +1,15 @@
+import Image from "next/image";
 import { ACCENTS, type Project } from "@/lib/projects";
 
-/** Abstract product mock — a stylized browser frame in accent tints */
-export default function ProjectMock({ project }: { project: Project }) {
+/** Browser-chrome frame around a real product screenshot. Renders a second,
+    dark-mode shot instead of a themed re-tint if the project has one. */
+export default function ProjectMock({
+  project,
+  priority = false,
+}: {
+  project: Project;
+  priority?: boolean;
+}) {
   const accent = ACCENTS[project.accent];
   return (
     <div className="relative mx-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-fg/20 bg-bg shadow-2xl">
@@ -13,35 +21,26 @@ export default function ProjectMock({ project }: { project: Project }) {
           {project.slug}.app
         </span>
       </div>
-      <div className="grid grid-cols-[70px_1fr] gap-4 p-5 md:grid-cols-[110px_1fr] md:p-7">
-        <div className="space-y-3">
-          <div className="h-7 w-7 rounded-full" style={{ backgroundColor: accent }} />
-          {[0.5, 0.35, 0.45, 0.3].map((o, i) => (
-            <div
-              key={i}
-              className="h-2 rounded-full bg-fg"
-              style={{ opacity: o * 0.4, width: `${60 + i * 10}%` }}
-            />
-          ))}
-        </div>
-        <div className="space-y-4">
-          <div
-            className="h-8 w-2/3 rounded-md"
-            style={{ backgroundColor: accent, opacity: 0.85 }}
+      <div className="relative aspect-[16/10] w-full bg-fg/5">
+        <Image
+          src={project.image}
+          alt={`${project.name} product screenshot`}
+          fill
+          priority={priority}
+          sizes="(max-width: 768px) 100vw, 768px"
+          className={`object-cover object-top ${
+            project.imageDark ? "theme-light-shot" : ""
+          }`}
+        />
+        {project.imageDark && (
+          <Image
+            src={project.imageDark}
+            alt={`${project.name} product screenshot, dark mode`}
+            fill
+            sizes="(max-width: 768px) 100vw, 768px"
+            className="theme-dark-shot object-cover object-top"
           />
-          <div className="h-2.5 w-full rounded-full bg-fg/15" />
-          <div className="h-2.5 w-5/6 rounded-full bg-fg/15" />
-          <div className="grid grid-cols-3 gap-3 pt-2">
-            {[0.25, 0.5, 0.35].map((o, i) => (
-              <div
-                key={i}
-                className="h-20 rounded-lg md:h-28"
-                style={{ backgroundColor: accent, opacity: o }}
-              />
-            ))}
-          </div>
-          <div className="h-2.5 w-4/6 rounded-full bg-fg/15" />
-        </div>
+        )}
       </div>
     </div>
   );

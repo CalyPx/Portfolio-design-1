@@ -14,12 +14,12 @@ const MENU_ITEMS = [
   { label: "Home", hash: "#top", subtitle: "Back to the top" },
   { label: "About", hash: "#about", subtitle: "Who I am & education" },
   {
-    label: "Approach",
-    hash: "#approach",
-    subtitle: "How I think about building",
+    label: "What I Do",
+    hash: "#services",
+    subtitle: "Interfaces, systems, intelligence",
   },
   {
-    label: "Selected Works",
+    label: "Projects",
     hash: "#works",
     subtitle: "Case studies & shipped projects",
   },
@@ -28,7 +28,7 @@ const MENU_ITEMS = [
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-function ScrambleMenuItem({
+function MenuItem({
   item,
   index,
   onSelect,
@@ -110,6 +110,29 @@ export default function FixedUI() {
     logo.style.opacity = skipPin ? "1" : "0";
   }, []);
 
+  // While the menu dialog is open: lock scrolling, close on Escape, and move
+  // focus into the dialog (returning it to the MENU button on close).
+  useEffect(() => {
+    if (!menuOpen) return;
+    const menuBtn = menuBtnRef.current;
+    document.body.style.overflow = "hidden";
+    window.__lenis?.stop();
+    const closeBtn = document.querySelector<HTMLButtonElement>(
+      "[data-menu-close]"
+    );
+    closeBtn?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.__lenis?.start();
+      window.removeEventListener("keydown", onKey);
+      menuBtn?.focus();
+    };
+  }, [menuOpen, menuBtnRef]);
+
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > window.innerHeight);
     onScroll();
@@ -128,13 +151,18 @@ export default function FixedUI() {
 
   const goTo = (hash: string) => {
     setMenuOpen(false);
-    const el = document.querySelector(hash);
-    if (el) {
-      if (window.__lenis) window.__lenis.scrollTo(el as HTMLElement, { duration: 1.2 });
-      else el.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.location.href = `/${hash}`;
-    }
+    // Deferred: the menu-open effect's cleanup must restart Lenis first,
+    // or scrollTo lands on a stopped instance and does nothing.
+    requestAnimationFrame(() => {
+      const el = document.querySelector(hash);
+      if (el) {
+        if (window.__lenis)
+          window.__lenis.scrollTo(el as HTMLElement, { duration: 1.2 });
+        else el.scrollIntoView({ behavior: "smooth" });
+      } else {
+        window.location.href = `/${hash}`;
+      }
+    });
   };
 
   return (
@@ -214,6 +242,7 @@ export default function FixedUI() {
               type="button"
               onClick={() => setMenuOpen(false)}
               aria-label="Close menu"
+              data-menu-close
               data-cursor="hover"
               className="group absolute left-5 top-6 flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.15em] md:left-9 md:top-8"
             >
@@ -236,7 +265,7 @@ export default function FixedUI() {
             <div className="grid min-h-0 flex-1 grid-cols-1 items-center gap-10 py-8 md:grid-cols-[1fr_auto]">
               <nav className="flex flex-col gap-1 md:gap-2">
                 {MENU_ITEMS.map((item, i) => (
-                  <ScrambleMenuItem
+                  <MenuItem
                     key={item.hash}
                     item={item}
                     index={i}

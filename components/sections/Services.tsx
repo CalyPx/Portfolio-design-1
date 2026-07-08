@@ -114,7 +114,7 @@ export default function Services() {
           scrollTrigger: {
             trigger: el,
             start: "top top",
-            end: `+=${PANELS.length * 1000}`,
+            end: `+=${PANELS.length * 800}`,
             pin: true,
             scrub: 0.8,
             anticipatePin: 1,
@@ -209,10 +209,10 @@ export default function Services() {
           transition={{ duration: 0.7, ease: EASE }}
         >
           <p className="transition-accent text-[13px] font-medium uppercase tracking-[0.3em]">
-            <span className="text-accent" aria-hidden="true">
+            <span className="text-accent-ink" aria-hidden="true">
               {"◇ "}
             </span>
-            What I&rsquo;m Learning · 0{i + 1}/03
+            What I Do · 0{i + 1}/03
           </p>
           <h3 className="mt-4 font-display text-[clamp(2.6rem,11vw,5rem)] font-bold uppercase leading-[0.95] tracking-[-0.02em]">
             {panel.word}
@@ -226,7 +226,7 @@ export default function Services() {
                 key={tool.name}
                 className="text-[11px] font-medium uppercase tracking-[0.18em] opacity-70"
               >
-                <span className="transition-accent text-accent" aria-hidden="true">
+                <span className="transition-accent text-accent-ink" aria-hidden="true">
                   {"◇ "}
                 </span>
                 {tool.name}
@@ -245,13 +245,13 @@ export default function Services() {
       {!reduced && (
         <div
           ref={pinRef}
-          className="relative hidden h-screen flex-col justify-center overflow-hidden px-4 md:flex md:px-8"
+          className="relative hidden h-screen flex-col overflow-hidden px-4 py-24 md:flex md:px-8"
         >
-          <p className="transition-accent absolute left-4 top-24 text-[13px] font-medium uppercase tracking-[0.3em] md:left-8 md:top-28">
-            <span className="text-accent" aria-hidden="true">
+          <p className="transition-accent shrink-0 text-[13px] font-medium uppercase tracking-[0.3em]">
+            <span className="text-accent-ink" aria-hidden="true">
               {"◇ "}
             </span>
-            What I&rsquo;m Learning ·{" "}
+            What I Do ·{" "}
             <span className="relative inline-grid align-baseline">
               {PANELS.map((panel, i) => (
                 <span key={panel.word} className="svc-index col-start-1 row-start-1">
@@ -262,7 +262,7 @@ export default function Services() {
             /03
           </p>
 
-          <div className="relative">
+          <div className="relative flex min-h-0 flex-1 flex-col justify-center">
             {/* drifting dot cluster near the headline */}
             <div
               ref={dotsRef}
@@ -278,7 +278,7 @@ export default function Services() {
               ))}
             </div>
 
-            <h3 className="grid font-display text-[clamp(3.4rem,13vw,13rem)] font-bold uppercase leading-[0.95] tracking-[-0.02em]">
+            <h3 className="grid font-display text-[clamp(3.4rem,11vw,10rem)] font-bold uppercase leading-[0.95] tracking-[-0.02em]">
               {PANELS.map((panel) => (
                 <span
                   key={panel.word}
@@ -294,7 +294,6 @@ export default function Services() {
                 <p
                   key={panel.word}
                   className="svc-desc col-start-1 row-start-1"
-                  data-cursor="magnify"
                 >
                   {panel.desc}
                 </p>
@@ -304,7 +303,7 @@ export default function Services() {
 
           {/* composed ruler: fixed x-positions, rising ticks, sliding diamond —
               one stacked per panel, crossfaded by the timeline above */}
-          <div className="relative mt-28 h-44 w-full">
+          <div className="relative h-44 w-full shrink-0">
             {PANELS.map((panel) => {
               const n = panel.tools.length;
               return (

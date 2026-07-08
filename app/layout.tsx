@@ -17,9 +17,15 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Rohit Poudel | Developer & AI Enthusiast",
+  title: "Rohit Poudel — Full-Stack & AI Developer",
   description:
-    "18-year-old developer and AI enthusiast from Kathmandu, Nepal. Building intelligent applications and exploring emerging tech, learning through self-study, hackathons, and competitions.",
+    "Full-stack developer from Kathmandu building AI-backed products for real problems in Nepal — civic complaint routing, earthquake risk modeling, and voice-first marketplaces.",
+  openGraph: {
+    title: "Rohit Poudel — Full-Stack & AI Developer",
+    description:
+      "Full-stack developer from Kathmandu building AI-backed products for real problems in Nepal.",
+    type: "website",
+  },
 };
 
 const themeInit = `try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}`;
@@ -36,14 +42,21 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${spaceGrotesk.variable} ${inter.variable} antialiased`}
     >
-      <head>
+      <head suppressHydrationWarning>
         <Script
           id="theme-init"
           strategy="beforeInteractive"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: themeInit }}
         />
       </head>
       <body className="font-body bg-bg text-fg">
+        <a
+          href="#top"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[110] focus:bg-fg focus:px-4 focus:py-2 focus:text-bg"
+        >
+          Skip to content
+        </a>
         <Providers>
           <AmbientGlow />
           <div className="plus-grid" aria-hidden="true" />

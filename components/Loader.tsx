@@ -5,9 +5,10 @@ import { motion } from "framer-motion";
 import { gsap, prefersReducedMotion } from "@/lib/gsap";
 import { useIntro } from "@/components/IntroContext";
 
-const GREETINGS = ["Hello", "Bonjour", "Hallo", "Ola", "नमस्ते", "سلام"];
+// Ends on नमस्ते — the one greeting that's actually his.
+const GREETINGS = ["Hello", "Bonjour", "Hola", "سلام", "नमस्ते"];
 
-const STEP_MS = 380;
+const STEP_MS = 300;
 const DARK = "#0b0f0e";
 const LIGHT = "#ffffff";
 
@@ -34,23 +35,20 @@ export default function Loader() {
     setVisible(false);
   };
 
-  // Plays on every load, including reloads — not just once per tab session.
+  // Full choreography plays on every load/reload. Reduced motion always skips.
   useLayoutEffect(() => {
+    if (prefersReducedMotion()) {
+      finish();
+      return;
+    }
     document.body.style.overflow = "hidden";
     window.__lenis?.stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Respect prefers-reduced-motion: skip the choreography, just reveal.
-  useEffect(() => {
-    if (!visible || !prefersReducedMotion()) return;
-    finish();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible]);
-
   // Cycle greetings, then trigger the wipe
   useEffect(() => {
-    if (!visible || wiping || prefersReducedMotion()) return;
+    if (!visible || wiping || finishedRef.current) return;
     const t = setTimeout(() => {
       if (idx < GREETINGS.length - 1) {
         setIdx((i) => i + 1);
@@ -74,12 +72,7 @@ export default function Loader() {
         yPercent: -50,
         duration: 0.85,
         ease: "power3.inOut",
-        onComplete: () => {
-          finishedRef.current = true;
-          document.body.style.overflow = "";
-          window.__lenis?.start();
-          setVisible(false);
-        },
+        onComplete: finish,
       }
     );
     return () => {
@@ -89,26 +82,21 @@ export default function Loader() {
 
   // Safety valve: never leave the page stuck behind the intro.
   useEffect(() => {
-    const t = setTimeout(finish, 8000);
+    const t = setTimeout(finish, 6000);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!visible) return null;
 
-  const darkStep = idx % 2 === 0;
   const pct = wiping
     ? 100
     : Math.round((idx / Math.max(GREETINGS.length - 1, 1)) * 100);
-  const fg = darkStep ? LIGHT : DARK;
 
   return (
     <div
       className="fixed inset-0 z-[95] flex items-center justify-center overflow-hidden"
-      style={{
-        backgroundColor: darkStep ? DARK : LIGHT,
-        transition: "background-color 0.25s ease",
-      }}
+      style={{ backgroundColor: DARK }}
       aria-hidden="true"
     >
       <motion.span
@@ -117,7 +105,7 @@ export default function Loader() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
         className="font-display text-[clamp(3rem,12vw,9rem)] font-bold leading-none"
-        style={{ color: fg }}
+        style={{ color: LIGHT }}
       >
         {GREETINGS[idx]}
       </motion.span>
@@ -125,7 +113,7 @@ export default function Loader() {
       {/* ticking percentage counter, bottom-left */}
       <span
         className="absolute bottom-8 left-6 font-display text-sm font-bold tracking-[0.2em] tabular-nums md:bottom-10 md:left-10 md:text-base"
-        style={{ color: fg, opacity: 0.75 }}
+        style={{ color: LIGHT, opacity: 0.75 }}
       >
         {String(pct).padStart(3, "0")}%
       </span>
@@ -133,21 +121,21 @@ export default function Loader() {
       {/* progress rail, bottom edge */}
       <div
         className="absolute inset-x-0 bottom-0 h-[3px]"
-        style={{ backgroundColor: fg, opacity: 0.15 }}
+        style={{ backgroundColor: LIGHT, opacity: 0.15 }}
       >
         <div
           className="h-full"
           style={{
             width: `${pct}%`,
-            backgroundColor: fg,
-            transition: "width 0.32s ease",
+            backgroundColor: LIGHT,
+            transition: "width 0.28s ease",
           }}
         />
       </div>
 
       <span
         className="absolute bottom-8 right-6 text-sm font-medium uppercase tracking-[0.3em] md:bottom-10 md:right-10"
-        style={{ color: fg, opacity: 0.75 }}
+        style={{ color: LIGHT, opacity: 0.75 }}
       >
         Rohit Poudel
       </span>

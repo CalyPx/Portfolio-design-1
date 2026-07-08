@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useSectionAccent } from "@/components/AccentContext";
+import { attachLetterSlideFX } from "@/lib/letterSlideFX";
 
 interface Word {
   text: string;
@@ -20,7 +21,7 @@ const STATEMENT: Word[] = [
   { text: "REAL" },
   { text: "PEOPLE" },
   { text: "IN" },
-  { text: "NEPAL," },
+  { text: "NEPAL,", accent: true },
   { text: "TURNING" },
   { text: "IDEAS" },
   { text: "INTO" },
@@ -30,6 +31,9 @@ const STATEMENT: Word[] = [
 
 export default function Approach() {
   const ref = useRef<HTMLElement>(null);
+  // Gates the accent-word letter FX until the word-by-word reveal has
+  // actually finished — otherwise letters would slide mid-entrance.
+  const revealedRef = useRef(false);
   useSectionAccent(ref, "amber");
 
   useEffect(() => {
@@ -48,10 +52,11 @@ export default function Approach() {
           scrollTrigger: {
             trigger: el,
             start: "top top",
-            end: "+=800",
+            end: "+=650",
             pin: true,
             scrub: 0.6,
             anticipatePin: 1,
+            onUpdate: (self) => (revealedRef.current = self.progress >= 0.99),
           },
         });
         tl.to(words, {
@@ -78,12 +83,14 @@ export default function Approach() {
             start: "top 80%",
             end: "center 55%",
             scrub: 0.6,
+            onUpdate: (self) => (revealedRef.current = self.progress >= 0.99),
           },
         });
       }
     );
 
     mm.add("(prefers-reduced-motion: reduce)", () => {
+      revealedRef.current = true;
       gsap.fromTo(
         el,
         { opacity: 0 },
@@ -98,6 +105,19 @@ export default function Approach() {
     return () => mm.revert();
   }, []);
 
+  // Accent words (BUILDING, NEPAL,, PRODUCTS.) get the same slide-through
+  // letter effect as the hero name — on hover, and ambiently on their own
+  // at random intervals, on random letters, in random directions.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    return attachLetterSlideFX(el, ".approach-letter-inner", {
+      ambient: true,
+      ambientDelay: [250, 700],
+      canSkip: () => !revealedRef.current,
+    });
+  }, []);
+
   return (
     <section
       ref={ref}
@@ -105,7 +125,7 @@ export default function Approach() {
       className="relative flex min-h-screen flex-col justify-start px-4 pb-24 pt-28 md:px-8 md:pt-36"
     >
       <p className="transition-accent mb-12 text-[13px] font-medium uppercase tracking-[0.3em]">
-        <span className="text-accent" aria-hidden="true">
+        <span className="text-accent-ink" aria-hidden="true">
           {"◇ "}
         </span>
         Why I Build
@@ -116,10 +136,21 @@ export default function Approach() {
             <span className="inline-block overflow-hidden pb-[0.08em] align-bottom">
               <span
                 className={`reveal-word inline-block will-change-transform ${
-                  w.accent ? "transition-accent text-accent" : ""
+                  w.accent ? "text-accent-amber" : ""
                 }`}
               >
-                {w.text}
+                {w.accent
+                  ? w.text.split("").map((ch, ci) => (
+                      <span
+                        key={ci}
+                        className="approach-letter inline-block overflow-hidden will-change-transform"
+                      >
+                        <span className="approach-letter-inner inline-block will-change-transform">
+                          {ch}
+                        </span>
+                      </span>
+                    ))
+                  : w.text}
               </span>
             </span>{" "}
           </span>

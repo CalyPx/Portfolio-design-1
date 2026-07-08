@@ -9,8 +9,8 @@ const SECTIONS = [
   { hash: "#top", label: "Home" },
   { hash: "#about", label: "About" },
   { hash: "#approach", label: "Approach" },
-  { hash: "#services", label: "Services" },
-  { hash: "#works", label: "Selected Works" },
+  { hash: "#services", label: "What I Do" },
+  { hash: "#works", label: "Projects" },
   { hash: "#contact", label: "Contact" },
 ];
 
@@ -67,7 +67,7 @@ export default function SectionDots() {
         >
           <span
             className={`transition-accent text-[10px] font-medium uppercase tracking-[0.15em] opacity-0 transition-opacity duration-300 group-hover:opacity-70 ${
-              active === i ? "text-accent" : ""
+              active === i ? "text-accent-ink" : ""
             }`}
           >
             {s.label}

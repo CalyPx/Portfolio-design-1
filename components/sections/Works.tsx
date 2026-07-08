@@ -41,11 +41,16 @@ function WorkRow({
         onMouseLeave={onHoverEnd}
         data-cursor="view"
         className="group grid grid-cols-[auto_1fr] items-center gap-5 border-t border-fg/15 py-7 md:grid-cols-[auto_1fr_auto] md:gap-10 md:py-0"
-        style={{ "--row-accent": accentHex } as React.CSSProperties}
+        style={
+          {
+            "--row-accent": accentHex,
+            "--row-ink": `color-mix(in oklab, ${accentHex} 55%, var(--fg))`,
+          } as React.CSSProperties
+        }
         aria-label={`${project.name}, ${project.category}, ${project.year}. View case study.`}
       >
         {/* numbered badge */}
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-fg/30 font-display text-sm font-bold transition-colors duration-300 group-hover:border-[var(--row-accent)] group-hover:text-[var(--row-accent)] md:h-14 md:w-14">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-fg/30 font-display text-sm font-bold transition-colors duration-300 group-hover:border-[var(--row-ink)] group-hover:text-[var(--row-ink)] md:h-14 md:w-14">
           {project.number}
         </span>
 
@@ -81,6 +86,14 @@ function WorkRow({
 
         {/* category, year, accent dot */}
         <span className="col-start-2 flex items-center gap-4 text-[11px] uppercase tracking-[0.2em] opacity-70 md:col-start-3 md:flex-col md:items-end md:gap-2">
+          {project.award && (
+            <span
+              className="hidden font-medium md:block"
+              style={{ color: "var(--row-ink)" }}
+            >
+              {project.award}
+            </span>
+          )}
           <span>{project.category}</span>
           <span className="flex items-center gap-2">
             <span>{project.year}</span>
@@ -152,12 +165,12 @@ export default function Works() {
 
   return (
     <section ref={ref} id="works" className="relative px-4 py-32 md:px-8">
-      <p className="transition-accent mb-14 text-xs font-medium uppercase tracking-[0.3em]">
-        <span className="text-accent" aria-hidden="true">
+      <h2 className="transition-accent mb-14 text-xs font-medium uppercase tracking-[0.3em]">
+        <span className="text-accent-ink" aria-hidden="true">
           {"◇ "}
         </span>
-        Selected Works
-      </p>
+        Projects
+      </h2>
       <ul className="border-b border-fg/15">
         {projects.map((p) => (
           <WorkRow

@@ -9,6 +9,12 @@
   --accent: var(--accent-sage);
   --bg: var(--light);
   --fg: var(--dark);
+  /* Readable companion to --accent: mixed toward the foreground so accent-
+     colored TEXT passes contrast on both themes. Fills keep using --accent. */
+  --accent-ink: color-mix(in oklab, var(--accent) 55%, var(--fg));
+  /* Same idea, pinned to amber — for copy that should always read orange
+     regardless of which section accent is currently active on scroll. */
+  --amber-ink: color-mix(in oklab, var(--accent-amber) 55%, var(--fg));
 }
 
 html[data-theme="dark"] {
@@ -20,6 +26,9 @@ html[data-theme="dark"] {
   --color-bg: var(--bg);
   --color-fg: var(--fg);
   --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-amber-ink: var(--amber-ink);
+  --color-accent-amber: var(--accent-amber);
   --color-dark: var(--dark);
   --color-light: var(--light);
   --font-display: "PP Neue Montreal", var(--font-space-grotesk),
@@ -130,7 +139,7 @@ body {
   border: 0;
   border-bottom: 2px solid color-mix(in srgb, var(--fg) 30%, transparent);
   font: inherit;
-  color: var(--accent);
+  color: var(--accent-ink);
   padding: 0 0.15em;
   transition: border-color 0.3s ease;
 }
@@ -169,6 +178,19 @@ body {
   80% { transform: translate(1%, -3%); }
   90% { transform: translate(-3%, -1%); }
   100% { transform: translate(0, 0); }
+}
+
+/* Theme-swapped product shots (e.g. a screenshot taken in each mode) */
+.theme-dark-shot {
+  display: none;
+}
+
+html[data-theme="dark"] .theme-light-shot {
+  display: none;
+}
+
+html[data-theme="dark"] .theme-dark-shot {
+  display: block;
 }
 
 @media (prefers-reduced-motion: reduce) {

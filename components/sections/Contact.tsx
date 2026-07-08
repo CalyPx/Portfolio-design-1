@@ -132,7 +132,6 @@ function useSendBlobs(hostRef: React.RefObject<HTMLElement | null>) {
               height: 16 + i * 6,
               backgroundColor: color,
               filter: "blur(1px)",
-              mixBlendMode: "multiply",
             }}
           />
         ))}
@@ -196,16 +195,23 @@ export default function Contact() {
     <section
       ref={ref}
       id="contact"
-      className="relative flex min-h-screen flex-col justify-between px-4 pb-10 pt-28 md:px-8"
+      className="relative flex min-h-screen flex-col justify-between gap-10 px-4 pb-10 pt-28 md:px-8 md:gap-14"
     >
-      <p className="transition-accent text-[13px] font-medium uppercase tracking-[0.3em]">
-        <span className="text-accent" aria-hidden="true">
+      <h2 className="transition-accent text-[13px] font-medium uppercase tracking-[0.3em]">
+        <span className="text-accent-ink" aria-hidden="true">
           {"◇ "}
         </span>
         Contact
-      </p>
+      </h2>
 
-      <div className="max-w-6xl space-y-8 font-body text-[clamp(2.5rem,3.1vw,3.5rem)] font-normal leading-[1.4]">
+      <form
+        id="contact-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          send();
+        }}
+        className="max-w-6xl space-y-8 font-body text-[clamp(2.5rem,3.1vw,3.5rem)] font-normal leading-[1.4]"
+      >
         <p className="flex flex-wrap items-center gap-x-2 md:flex-nowrap md:whitespace-nowrap">
           <span>Hey Rohit! My name is</span>
           <input
@@ -241,11 +247,13 @@ export default function Contact() {
           <span className="flex flex-wrap items-center gap-x-2">
             <span>Reach me at</span>
             <input
-              type="email"
+              type={channel === "Email" ? "email" : "tel"}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@mail.com"
-              aria-label="Your email or phone"
+              placeholder={channel === "Email" ? "you@mail.com" : "98XXXXXXXX"}
+              aria-label={
+                channel === "Email" ? "Your email" : "Your WhatsApp number"
+              }
               className="madlib-input w-[13ch]"
             />
             <span>via</span>
@@ -270,12 +278,12 @@ export default function Contact() {
           />
           <span>.</span>
         </p>
-      </div>
+      </form>
 
       <button
         ref={sendBtnRef}
-        type="button"
-        onClick={send}
+        type="submit"
+        form="contact-form"
         onMouseEnter={() => {
           jitter();
           blobs.onMouseEnter();
@@ -299,7 +307,7 @@ export default function Contact() {
         </span>
         <span
           aria-hidden="true"
-          className="transition-accent relative z-10 inline-block text-accent transition-transform duration-500 ease-out group-hover:translate-x-3 group-hover:-translate-y-3"
+          className="transition-accent relative z-10 inline-block text-accent-ink transition-transform duration-500 ease-out group-hover:translate-x-3 group-hover:-translate-y-3"
         >
           ↗
         </span>
@@ -340,7 +348,7 @@ export default function Contact() {
 
       <footer className="flex flex-wrap items-center justify-between gap-4 border-t border-fg/15 py-5 text-xs uppercase tracking-[0.2em] opacity-50">
         <span>© 2026 Rohit Poudel</span>
-        <span>Kathmandu · </span>
+        <span>Kathmandu, Nepal</span>
         <span>Made by Rohit</span>
       </footer>
     </section>

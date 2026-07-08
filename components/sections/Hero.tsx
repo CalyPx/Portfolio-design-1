@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { gsap } from "@/lib/gsap";
 import { useSectionAccent } from "@/components/AccentContext";
-import { attachSlideHover } from "@/lib/letterSlide";
+import { attachLetterSlideFX } from "@/lib/letterSlideFX";
 
 const TAGS = [
   "AI INTEGRATION",
@@ -12,7 +12,7 @@ const TAGS = [
   "COMPUTER VISION",
   "CIVIC-TECH",
   "DATA PIPELINES",
-  "SELF-TAUGHT",
+  "VOICE INTERFACES",
 ];
 
 // like the reference: plain first line, two accent letters in the surname
@@ -86,7 +86,7 @@ export default function Hero({ started }: HeroProps) {
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: "+=1400",
+            end: "+=1000",
             pin: true,
             scrub: 0.8,
             anticipatePin: 1,
@@ -120,34 +120,17 @@ export default function Hero({ started }: HeroProps) {
     return () => mm.revert();
   }, []);
 
-  // Slide-on-hover: each letter kicks away from wherever the cursor enters
-  // it, at a randomized angle so neighboring letters never move in the
-  // same direction, then springs back — a scattered, tactile reaction
-  // instead of one uniform ripple.
+  // Per-letter slide hover: each letter slides out in a random direction
+  // and its clone slides in from the opposite direction — off during the
+  // scroll pin and before the entrance finishes, so it never fights either
+  // animation. The letter box (`.hero-letter`) stays overflow-hidden
+  // permanently so the swap is always clipped to one line height.
   useEffect(() => {
     const container = nameRef.current;
     if (!container) return;
-    return attachSlideHover(container, ".hero-letter-inner", {
-      minDist: 20,
-      maxDist: 42,
-      canSkip: () => pinProgressRef.current > 0.01,
+    return attachLetterSlideFX(container, ".hero-letter-inner", {
+      canSkip: () => !started || pinProgressRef.current > 0.01,
     });
-  }, []);
-
-  // The per-letter mask (.hero-letter) is overflow-hidden so the initial
-  // reveal-from-below animation stays clipped to one line height. Once
-  // that entrance finishes, release the clip — otherwise the hover slide
-  // above gets cut off against that same tight mask.
-  useEffect(() => {
-    if (!started) return;
-    const container = nameRef.current;
-    if (!container) return;
-    const t = setTimeout(() => {
-      container.querySelectorAll<HTMLElement>(".hero-letter").forEach((el) => {
-        el.style.overflow = "visible";
-      });
-    }, 1100);
-    return () => clearTimeout(t);
   }, [started]);
 
   const marqueeItems = [...TAGS, ...TAGS];
@@ -204,12 +187,11 @@ export default function Hero({ started }: HeroProps) {
           initial={{ y: 30, opacity: 0 }}
           animate={started ? { y: 0, opacity: 1 } : {}}
           transition={{ duration: 0.9, ease: EASE, delay: 0.5 }}
-          data-cursor="magnify"
           className="mt-4 mb-8 self-end px-4 text-right font-display text-[clamp(1rem,1.9vw,1.5rem)] font-bold uppercase leading-relaxed md:mb-10 md:px-10"
         >
-          Developer &amp; AI enthusiast building intelligent apps
+          I build full-stack, AI-backed products for real problems in Nepal —
           <br />
-          and learning as I go, through self-study, hackathons, and competitions.
+          civic complaints, earthquake risk, farm-to-vendor markets.
         </motion.p>
 
         <motion.div
